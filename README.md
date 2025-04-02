@@ -1,2 +1,3 @@
 # PDS_project
-projeto da cadeira de pds
+
+    - Projeto da Unidade Curricular (UC) de Projeto de Desenvolvimento de Software (PDS)
