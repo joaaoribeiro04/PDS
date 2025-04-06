@@ -102,11 +102,11 @@ test("Teste #7 - Inserir utilizador com email duplicado", () => {
 
 test("Teste #8 - Listar os utilizador por id", () => {
   return request(app)
-    .get(`${MAIN_ROUTE}/2`)
+    .get(`${MAIN_ROUTE}/1`)
     .then((res) => {
       expect(res.status).toBe(200);
-      expect(res.body.name).toBe("João Silva");
-      expect(res.body.id).toBe(2);
+      expect(res.body.name).toBe("André Pereira");
+      expect(res.body.id).toBe(1);
     });
 });
 
