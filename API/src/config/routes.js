@@ -8,4 +8,8 @@ module.exports = (app) => {
     .get(app.routes.users.getById)
     .put(app.routes.users.update)
     .delete(app.routes.users.remove);
+
+  module.exports = app => {
+    require('../routes/orders')(app);
+    }; 
 };
