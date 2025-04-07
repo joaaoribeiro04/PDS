@@ -21,4 +21,15 @@ module.exports = (app) => {
     .get(app.routes.announcements.getById)
     .put(app.routes.announcements.update)
     .delete(app.routes.announcements.remove);
+
+    app
+    .route("/faturas")
+    .get(app.routes.faturas.getAll)
+    .post(app.routes.faturas.create);
+
+  app
+    .route("/faturas/:id")
+    .get(app.routes.faturas.getById)
+    .put(app.routes.faturas.update)
+    .delete(app.routes.faturas.remove);
 };
