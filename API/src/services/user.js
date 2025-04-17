@@ -15,10 +15,22 @@ module.exports = (app) => {
       return { error: "A password é um atributo obrigatório" };
     if (!user.phone) return { error: "O telefone é um atributo obrigatório" };
 
-    let userDb = await getAll().where({ email: user.email });
-    if (userDb && userDb.length > 0) return { error: "Email duplicado" };
+    const userDb = await app.db("users").where({ email: user.email }).first();
+    if (userDb) return { error: "Email duplicado" };
 
-    return app.db("users").insert(user, "*");
+    try {
+      const [newUser] = await app.db("users").insert(user, "*");
+
+      await app.db("roles").insert({
+        user_id: newUser.id,
+        isAdmin: false,
+        isWorker: false,
+      });
+
+      return newUser;
+    } catch (err) {
+      return { error: "Erro ao salvar usuário", details: err.message };
+    }
   };
 
   const update = async (id, user) => {
@@ -48,9 +60,15 @@ module.exports = (app) => {
 
   const remove = async (id) => {
     let userDb = await getAll().where({ id });
-    if (userDb && userDb.length == 0) return { error: "Utilizador não encontrado" };
+    if (userDb && userDb.length == 0)
+      return { error: "Utilizador não encontrado" };
 
-    return app.db("users").where({ id }).del();
+    try {
+      await app.db("roles").where({ user_id: id }).del();
+      return await app.db("users").where({ id }).del();
+    } catch (err) {
+      return { error: "Error while removing user", details: err.message };
+    }
   };
 
   return { getAll, getById, save, update, remove };

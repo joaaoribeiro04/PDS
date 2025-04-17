@@ -11,6 +11,15 @@ module.exports = (app) => {
     .put(app.routes.users.update)
     .delete(app.routes.users.remove);
 
+  app.route("/users/roles/admins").get(app.routes.roles.getAdmins);
+
+  app.route("/users/roles/workers").get(app.routes.roles.getWorkers);
+
+  app
+    .route("/users/:id/roles")
+    .get(app.routes.roles.getByUserId)
+    .put(app.routes.roles.update);
+
   app
     .route("/announcements")
     .get(app.routes.announcements.getAll)
@@ -22,7 +31,7 @@ module.exports = (app) => {
     .put(app.routes.announcements.update)
     .delete(app.routes.announcements.remove);
 
-    app
+  app
     .route("/faturas")
     .get(app.routes.faturas.getAll)
     .post(app.routes.faturas.create);
@@ -33,7 +42,7 @@ module.exports = (app) => {
     .put(app.routes.faturas.update)
     .delete(app.routes.faturas.remove);
 
-    app
+  app
     .route("/orders")
     .get(app.routes.orders.getAll)
     .post(app.routes.orders.create);
