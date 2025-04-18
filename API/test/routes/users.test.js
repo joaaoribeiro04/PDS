@@ -203,7 +203,7 @@ test("Teste #14 - Atualizar utilizador com password vazia", () => {
 
 test("Teste #15 - Atualizar utilizador com id inválido", () => {
   return request(app)
-    .put(`${MAIN_ROUTE}/99999`)
+    .put(`${MAIN_ROUTE}/-1`)
     .send({
       name: "André Pereira",
       phone: "912912345",
@@ -237,7 +237,7 @@ test("Teste #16 - Remover utilizador", () => {
 
 test("Teste #17 - Remover utilizador com id inválido", () => {
   return request(app)
-    .delete(`${MAIN_ROUTE}/99999`)
+    .delete(`${MAIN_ROUTE}/-1`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Utilizador não encontrado");

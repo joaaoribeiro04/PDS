@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+const validationError = require("../errors/validationError");
+
 module.exports = (app) => {
   const getAll = () => {
     return app.db("users").select();
@@ -9,14 +11,17 @@ module.exports = (app) => {
   };
 
   const save = async (user) => {
-    if (!user.name) return { error: "O nome é um atributo obrigatório" };
-    if (!user.email) return { error: "O email é um atributo obrigatório" };
+    if (!user.name)
+      throw new validationError("O nome é um atributo obrigatório");
+    if (!user.email)
+      throw new validationError("O email é um atributo obrigatório");
     if (!user.password)
-      return { error: "A password é um atributo obrigatório" };
-    if (!user.phone) return { error: "O telefone é um atributo obrigatório" };
+      throw new validationError("A password é um atributo obrigatório");
+    if (!user.phone)
+      throw new validationError("O telefone é um atributo obrigatório");
 
     const userDb = await app.db("users").where({ email: user.email }).first();
-    if (userDb) return { error: "Email duplicado" };
+    if (userDb) throw new validationError("Email duplicado");
 
     try {
       const [newUser] = await app.db("users").insert(user, "*");
@@ -29,7 +34,7 @@ module.exports = (app) => {
 
       return newUser;
     } catch (err) {
-      return { error: "Erro ao salvar usuário", details: err.message };
+      throw new validationError("Erro ao salvar usuário", err.message);
     }
   };
 
@@ -37,23 +42,24 @@ module.exports = (app) => {
     if (user) {
       let userDb = await getAll().where({ id });
       if (userDb && userDb.length == 0)
-        return { error: "Utilizador não encontrado" };
+        throw new validationError("Utilizador não encontrado");
     }
 
     if ((user.name && user.name == "") || user.name == null)
-      return { error: "O nome é um atributo obrigatório" };
+      throw new validationError("O nome é um atributo obrigatório");
     if ((user.password && user.password == "") || user.password == null)
-      return { error: "A password é um atributo obrigatório" };
+      throw new validationError("A password é um atributo obrigatório");
     if ((user.phone && user.phone == "") || user.phone == null)
-      return { error: "O telefone é um atributo obrigatório" };
+      throw new validationError("O telefone é um atributo obrigatório");
 
     if (user.email) {
       let userDb = await getAll().where({ email: user.email });
-      if (userDb && userDb.length > 0) return { error: "Email duplicado" };
+      if (userDb && userDb.length > 0)
+        throw new validationError("Email duplicado");
     }
 
     if ((user.email && user.email == "") || user.email == null)
-      return { error: "O email é um atributo obrigatório" };
+      throw new validationError("O email é um atributo obrigatório");
 
     return app.db("users").where({ id }).update(user, "*");
   };
@@ -61,13 +67,13 @@ module.exports = (app) => {
   const remove = async (id) => {
     let userDb = await getAll().where({ id });
     if (userDb && userDb.length == 0)
-      return { error: "Utilizador não encontrado" };
+      throw new validationError("Utilizador não encontrado");
 
     try {
       await app.db("roles").where({ user_id: id }).del();
       return await app.db("users").where({ id }).del();
     } catch (err) {
-      return { error: "Error while removing user", details: err.message };
+      throw new validationError("Error while removing user", err.message);
     }
   };
 

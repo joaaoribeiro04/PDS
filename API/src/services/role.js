@@ -15,7 +15,7 @@ module.exports = (app) => {
   const update = async (user_id, role) => {
     const existing = await app.db("roles").where({ user_id }).first();
     if (!existing) {
-      return { error: "User not found" };
+      throw new validationError("User not found");
     }
 
     return app.db("roles").where({ user_id }).update(role, "*");
