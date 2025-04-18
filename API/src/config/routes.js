@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 module.exports = (app) => {
+  app.route("/auth/signin").post(app.routes.auths.signin);
+
   app
     .route("/users")
     .get(app.routes.users.getAll)
