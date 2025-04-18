@@ -1,13 +1,27 @@
 /* eslint-disable no-undef */
 const validationError = require("../errors/validationError");
+const bcrypt = require("bcrypt-nodejs");
 
 module.exports = (app) => {
+  const findOne = (filter = {}) => {
+    return app.db("users").where(filter).first();
+  };
+
+  getPasswordHash = (password) => {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+  };
+
   const getAll = () => {
-    return app.db("users").select();
+    return app.db("users").select("id", "name", "email", "phone");
   };
 
   const getById = (filter = {}) => {
-    return app.db("users").where(filter).first();
+    return app
+      .db("users")
+      .where(filter)
+      .first()
+      .select("id", "name", "email", "phone");
   };
 
   const save = async (user) => {
@@ -20,19 +34,24 @@ module.exports = (app) => {
     if (!user.phone)
       throw new validationError("O telefone é um atributo obrigatório");
 
-    const userDb = await app.db("users").where({ email: user.email }).first();
+    const userDb = await findOne({ email: user.email });
     if (userDb) throw new validationError("Email duplicado");
 
     try {
-      const [newUser] = await app.db("users").insert(user, "*");
+      let newUser = { ...user };
+      newUser.password = getPasswordHash(user.password);
+
+      let [resultUser] = await app
+        .db("users")
+        .insert(newUser, ["id", "name", "email", "phone"]);
 
       await app.db("roles").insert({
-        user_id: newUser.id,
+        user_id: resultUser.id,
         isAdmin: false,
         isWorker: false,
       });
 
-      return newUser;
+      return resultUser;
     } catch (err) {
       throw new validationError("Erro ao salvar usuário", err.message);
     }
@@ -61,7 +80,10 @@ module.exports = (app) => {
     if ((user.email && user.email == "") || user.email == null)
       throw new validationError("O email é um atributo obrigatório");
 
-    return app.db("users").where({ id }).update(user, "*");
+    let newUser = { ...user };
+    if (user.password) newUser.password = getPasswordHash(user.password);
+    
+    return app.db("users").where({ id }).update(newUser, ["id", "name", "email", "phone"]);
   };
 
   const remove = async (id) => {
@@ -77,5 +99,5 @@ module.exports = (app) => {
     }
   };
 
-  return { getAll, getById, save, update, remove };
+  return { findOne, getAll, getById, save, update, remove };
 };

@@ -11,6 +11,7 @@ test("Teste #1 - Listar os utilizador", () => {
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body[0]).not.toHaveProperty("password");
     });
 });
 
@@ -26,6 +27,27 @@ test("Teste #2 - Inserir utilizador", () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe("João Silva");
+      expect(res.body).not.toHaveProperty("password");
+    });
+});
+
+test("Test #2.1 - Save encrypted password", async () => {
+  return await request(app)
+    .post(MAIN_ROUTE)
+    .send({
+      name: "João Silva",
+      phone: "912345678",
+      email: `new${mail}`,
+      password: "1234",
+    })
+    .then(async (res) => {
+      expect(res.status).toBe(201);
+
+      const { id } = res.body;
+      const userDB = await app.services.user.findOne({ id });
+
+      expect(userDB.password).not.toBeUndefined();
+      expect(userDB.password).not.toBe("1234");
     });
 });
 
@@ -233,7 +255,6 @@ test("Teste #16 - Remover utilizador", () => {
       expect(res.status).toBe(204);
     });
 });
-
 
 test("Teste #17 - Remover utilizador com id inválido", () => {
   return request(app)
