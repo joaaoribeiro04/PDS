@@ -1,13 +1,29 @@
 /* eslint-disable no-undef */
 const request = require("supertest");
+const jwt = require("jwt-simple");
+
 const app = require("../../src/app");
 
 const MAIN_ROUTE = "/users";
 const mail = `${Date.now()}@ipca.pt`;
+var user;
 
-test("Teste #1 - Listar os utilizador", () => {
+beforeAll(async () => {
+  const res = await app.services.user.save({
+    name: "André Pereira",
+    phone: "912345678",
+    email: `andre${mail}`,
+    password: "1234",
+  });
+
+  user = { ...res };
+  user.token = jwt.encode(user, process.env.AUTH_SECRET);
+});
+
+test("Test #1 - Get all users", () => {
   return request(app)
     .get(MAIN_ROUTE)
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.length).toBeGreaterThan(0);
@@ -15,7 +31,7 @@ test("Teste #1 - Listar os utilizador", () => {
     });
 });
 
-test("Teste #2 - Inserir utilizador", () => {
+test("Test #2 - Insert user", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -24,6 +40,7 @@ test("Teste #2 - Inserir utilizador", () => {
       email: mail,
       password: "pasword",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe("João Silva");
@@ -40,6 +57,7 @@ test("Test #2.1 - Save encrypted password", async () => {
       email: `new${mail}`,
       password: "1234",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then(async (res) => {
       expect(res.status).toBe(201);
 
@@ -51,7 +69,7 @@ test("Test #2.1 - Save encrypted password", async () => {
     });
 });
 
-test("Teste #3 - Inserir utilizador sem nome", () => {
+test("Test #3 - Insert user without name", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -59,13 +77,14 @@ test("Teste #3 - Inserir utilizador sem nome", () => {
       email: mail,
       password: "pasword",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O nome é um atributo obrigatório");
     });
 });
 
-test("Teste #4 - Inserir utilizador sem email", () => {
+test("Test #4 - Insert user without email", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -73,13 +92,14 @@ test("Teste #4 - Inserir utilizador sem email", () => {
       phone: "912345678",
       password: "pasword",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O email é um atributo obrigatório");
     });
 });
 
-test("Teste #5 - Inserir utilizador sem password", () => {
+test("Test #5 - Insert user without password", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -87,13 +107,14 @@ test("Teste #5 - Inserir utilizador sem password", () => {
       phone: "912345678",
       email: mail,
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("A password é um atributo obrigatório");
     });
 });
 
-test("Teste #6 - Inserir utilizador sem telefone", () => {
+test("Test #6 - Insert user without phone", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -101,13 +122,14 @@ test("Teste #6 - Inserir utilizador sem telefone", () => {
       email: mail,
       password: "pasword",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O telefone é um atributo obrigatório");
     });
 });
 
-test("Teste #7 - Inserir utilizador com email duplicado", () => {
+test("Test #7 - Insert user with duplicated email", () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -116,15 +138,17 @@ test("Teste #7 - Inserir utilizador com email duplicado", () => {
       email: mail,
       password: "pasword",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Email duplicado");
     });
 });
 
-test("Teste #8 - Listar os utilizador por id", () => {
+test("Test #8 - Get user by id", () => {
   return request(app)
     .get(`${MAIN_ROUTE}/1`)
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.name).toBe("André Pereira");
@@ -132,7 +156,7 @@ test("Teste #8 - Listar os utilizador por id", () => {
     });
 });
 
-test("Teste #9 - Atualizar utilizador", () => {
+test("Test #9 - Update user", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -141,6 +165,7 @@ test("Teste #9 - Atualizar utilizador", () => {
       email: `ap${mail}`,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.message).toBe("Utilizador atualizado");
@@ -148,7 +173,7 @@ test("Teste #9 - Atualizar utilizador", () => {
     });
 });
 
-test("Teste #10 - Atualizar utilizador com nome vazio", () => {
+test("Test #10 - Update user with name null", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -157,13 +182,14 @@ test("Teste #10 - Atualizar utilizador com nome vazio", () => {
       email: `ap1${mail}`,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O nome é um atributo obrigatório");
     });
 });
 
-test("Teste #11 - Atualizar utilizador com telefone vazio", () => {
+test("Test #11 - Update user with phone null", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -172,13 +198,14 @@ test("Teste #11 - Atualizar utilizador com telefone vazio", () => {
       email: `ap1${mail}`,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O telefone é um atributo obrigatório");
     });
 });
 
-test("Teste #12 - Atualizar utilizador com email vazio", () => {
+test("Test #12 - Update user with email null", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -187,13 +214,14 @@ test("Teste #12 - Atualizar utilizador com email vazio", () => {
       email: null,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O email é um atributo obrigatório");
     });
 });
 
-test("Teste #13 - Atualizar utilizador com email duplicado", () => {
+test("Test #13 - Update user with duplicated email", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -202,13 +230,14 @@ test("Teste #13 - Atualizar utilizador com email duplicado", () => {
       email: `ap${mail}`,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Email duplicado");
     });
 });
 
-test("Teste #14 - Atualizar utilizador com password vazia", () => {
+test("Test #14 - Update user with password null", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/1`)
     .send({
@@ -217,13 +246,14 @@ test("Teste #14 - Atualizar utilizador com password vazia", () => {
       email: `ap1${mail}`,
       password: null,
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("A password é um atributo obrigatório");
     });
 });
 
-test("Teste #15 - Atualizar utilizador com id inválido", () => {
+test("Test #15 - Update user with invalid id", () => {
   return request(app)
     .put(`${MAIN_ROUTE}/-1`)
     .send({
@@ -232,13 +262,14 @@ test("Teste #15 - Atualizar utilizador com id inválido", () => {
       email: `ap1${mail}`,
       password: "updated",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Utilizador não encontrado");
     });
 });
 
-test("Teste #16 - Remover utilizador", () => {
+test("Test #16 - Delete user", () => {
   return app
     .db("users")
     .insert(
@@ -250,15 +281,20 @@ test("Teste #16 - Remover utilizador", () => {
       },
       ["id"]
     )
-    .then((user) => request(app).delete(`${MAIN_ROUTE}/${user[0].id}`))
-    .then((res) => {
-      expect(res.status).toBe(204);
+    .then((newUser) => {
+      request(app)
+        .delete(`${MAIN_ROUTE}/${newUser[0].id}`)
+        .set("Authorization", `Bearer ${user.token}`)
+        .then((res) => {
+          expect(res.status).toBe(204);
+        });
     });
 });
 
-test("Teste #17 - Remover utilizador com id inválido", () => {
+test("Test #17 - Delete user with invalid id", () => {
   return request(app)
     .delete(`${MAIN_ROUTE}/-1`)
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Utilizador não encontrado");

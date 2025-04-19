@@ -1,5 +1,9 @@
 /* eslint-disable no-undef */
 module.exports = (app) => {
+  const findOne = (filter = {}) => {
+    return app.db("roles").where(filter).first();
+  };
+
   const getByUserId = (filter = {}) => {
     return app.db("roles").where(filter).first();
   };
@@ -21,5 +25,5 @@ module.exports = (app) => {
     return app.db("roles").where({ user_id }).update(role, "*");
   };
 
-  return { getByUserId, getAdmins, getWorkers, update };
+  return { findOne, getByUserId, getAdmins, getWorkers, update };
 };

@@ -7,16 +7,23 @@ module.exports = (app) => {
   const signin = async (req, res, next) => {
     app.services.user
       .findOne({ email: req.body.email })
-      .then((user) => {
+      .then(async (user) => {
         if (!user) throw new validationError("Authentication failed.");
         if (bcrypt.compareSync(req.body.password, user.password)) {
-          // #TODO procurar roles do user e adicionar ao payload
+          const userRole = await app.services.role.findOne({
+            user_id: user.id,
+          });
+          if (!userRole) throw new validationError("Authentication failed.");
 
           const payload = {
             id: user.id,
             name: user.name,
             email: user.email,
             phone: user.phone,
+            roles: {
+              isAdmin: userRole.isAdmin,
+              isWorker: userRole.isWorker,
+            },
           };
 
           const token = jwt.encode(payload, process.env.AUTH_SECRET);
@@ -28,3 +35,5 @@ module.exports = (app) => {
 
   return { signin };
 };
+
+// #TODO procurar roles do user e adicionar ao payload

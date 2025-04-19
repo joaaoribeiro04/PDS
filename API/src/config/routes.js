@@ -4,11 +4,13 @@ module.exports = (app) => {
 
   app
     .route("/users")
+    .all(app.config.passport.authenticate())
     .get(app.routes.users.getAll)
     .post(app.routes.users.create);
 
   app
     .route("/users/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.users.getById)
     .put(app.routes.users.update)
     .delete(app.routes.users.remove);
