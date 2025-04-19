@@ -19,7 +19,7 @@ test("Test #1 - Get auth token", () => {
           email: mail,
           password: "123456",
         })
-        .then((res) => {
+        .then((res) => {         
           expect(res.status).toBe(200);
           expect(res.body).toHaveProperty("token");
         });

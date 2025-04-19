@@ -6,7 +6,7 @@ module.exports = (app) => {
     .route("/users")
     .all(app.config.passport.authenticate())
     .get(app.routes.users.getAll)
-    .post(app.routes.users.create);
+    .post(app.config.authorization.authorize('isAdmin'), app.routes.users.create);
 
   app
     .route("/users/:id")

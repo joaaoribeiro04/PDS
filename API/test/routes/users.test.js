@@ -7,6 +7,8 @@ const app = require("../../src/app");
 const MAIN_ROUTE = "/users";
 const mail = `${Date.now()}@ipca.pt`;
 var user;
+var admin;
+var worker;
 
 beforeAll(async () => {
   const res = await app.services.user.save({
@@ -16,8 +18,14 @@ beforeAll(async () => {
     password: "1234",
   });
 
-  user = { ...res };
+  user = { ...res, roles: { isAdmin: false, isWorker: false } };
   user.token = jwt.encode(user, process.env.AUTH_SECRET);
+
+  admin = { ...res, roles: { isAdmin: true, isWorker: false } };
+  admin.token = jwt.encode(admin, process.env.AUTH_SECRET);
+
+  worker = { ...res, roles: { isAdmin: false, isWorker: true } };
+  worker.token = jwt.encode(worker, process.env.AUTH_SECRET);
 });
 
 test("Test #1 - Get all users", () => {
@@ -40,7 +48,7 @@ test("Test #2 - Insert user", () => {
       email: mail,
       password: "pasword",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe("João Silva");
@@ -57,7 +65,7 @@ test("Test #2.1 - Save encrypted password", async () => {
       email: `new${mail}`,
       password: "1234",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then(async (res) => {
       expect(res.status).toBe(201);
 
@@ -77,7 +85,7 @@ test("Test #3 - Insert user without name", () => {
       email: mail,
       password: "pasword",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O nome é um atributo obrigatório");
@@ -92,7 +100,7 @@ test("Test #4 - Insert user without email", () => {
       phone: "912345678",
       password: "pasword",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O email é um atributo obrigatório");
@@ -107,7 +115,7 @@ test("Test #5 - Insert user without password", () => {
       phone: "912345678",
       email: mail,
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("A password é um atributo obrigatório");
@@ -122,7 +130,7 @@ test("Test #6 - Insert user without phone", () => {
       email: mail,
       password: "pasword",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("O telefone é um atributo obrigatório");
@@ -138,7 +146,7 @@ test("Test #7 - Insert user with duplicated email", () => {
       email: mail,
       password: "pasword",
     })
-    .set("Authorization", `Bearer ${user.token}`)
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Email duplicado");
