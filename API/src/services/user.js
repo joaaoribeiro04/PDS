@@ -26,16 +26,16 @@ module.exports = (app) => {
 
   const save = async (user) => {
     if (!user.name)
-      throw new validationError("O nome é um atributo obrigatório");
+      throw new validationError("Name is a required attribute");
     if (!user.email)
-      throw new validationError("O email é um atributo obrigatório");
+      throw new validationError("Email is a required attribute");
     if (!user.password)
-      throw new validationError("A password é um atributo obrigatório");
+      throw new validationError("Password is a required attribute");
     if (!user.phone)
-      throw new validationError("O telefone é um atributo obrigatório");
+      throw new validationError("Phone is a required attribute");
 
     const userDb = await findOne({ email: user.email });
-    if (userDb) throw new validationError("Email duplicado");
+    if (userDb) throw new validationError("Email is already in use");
 
     try {
       let newUser = { ...user };
@@ -53,7 +53,7 @@ module.exports = (app) => {
 
       return resultUser;
     } catch (err) {
-      throw new validationError("Erro ao salvar usuário", err.message);
+      throw new validationError("Error saving user", err.message);
     }
   };
 
@@ -61,24 +61,24 @@ module.exports = (app) => {
     if (user) {
       let userDb = await getAll().where({ id });
       if (userDb && userDb.length == 0)
-        throw new validationError("Utilizador não encontrado");
+        throw new validationError("User not found");
     }
 
     if ((user.name && user.name == "") || user.name == null)
-      throw new validationError("O nome é um atributo obrigatório");
+      throw new validationError("Name is a required attribute");;
     if ((user.password && user.password == "") || user.password == null)
-      throw new validationError("A password é um atributo obrigatório");
+      throw new validationError("Password is a required attribute");
     if ((user.phone && user.phone == "") || user.phone == null)
-      throw new validationError("O telefone é um atributo obrigatório");
+      throw new validationError("Phone is a required attribute");
 
     if (user.email) {
       let userDb = await getAll().where({ email: user.email });
       if (userDb && userDb.length > 0)
-        throw new validationError("Email duplicado");
+        throw new validationError("Email is already in use");
     }
 
     if ((user.email && user.email == "") || user.email == null)
-      throw new validationError("O email é um atributo obrigatório");
+      throw new validationError("Email is a required attribute");
 
     let newUser = { ...user };
     if (user.password) newUser.password = getPasswordHash(user.password);
@@ -89,7 +89,7 @@ module.exports = (app) => {
   const remove = async (id) => {
     let userDb = await getAll().where({ id });
     if (userDb && userDb.length == 0)
-      throw new validationError("Utilizador não encontrado");
+      throw new validationError("User not found");
 
     try {
       await app.db("roles").where({ user_id: id }).del();

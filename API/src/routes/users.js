@@ -28,7 +28,7 @@ module.exports = (app) => {
       let result = await app.services.user.update(req.params.id, req.body);
       res
         .status(200)
-        .json({ data: result[0], message: "Utilizador atualizado" });
+        .json({ data: result[0], message: "User updated" });
     } catch (err) {
       return next(err);
     }

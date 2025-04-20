@@ -6,7 +6,10 @@ module.exports = (app) => {
     .route("/users")
     .all(app.config.passport.authenticate())
     .get(app.routes.users.getAll)
-    .post(app.config.authorization.authorize('isAdmin'), app.routes.users.create);
+    .post(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.users.create
+    );
 
   app
     .route("/users/:id")
@@ -15,14 +18,24 @@ module.exports = (app) => {
     .put(app.routes.users.update)
     .delete(app.routes.users.remove);
 
-  app.route("/users/roles/admins").get(app.routes.roles.getAdmins);
+  app
+    .route("/users/roles/admins")
+    .all(app.config.passport.authenticate())
+    .get(app.routes.roles.getAdmins);
 
-  app.route("/users/roles/workers").get(app.routes.roles.getWorkers);
+  app
+    .route("/users/roles/workers")
+    .all(app.config.passport.authenticate())
+    .get(app.routes.roles.getWorkers);
 
   app
     .route("/users/:id/roles")
+    .all(app.config.passport.authenticate())
     .get(app.routes.roles.getByUserId)
-    .put(app.routes.roles.update);
+    .put(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.roles.update
+    );
 
   app
     .route("/announcements")
