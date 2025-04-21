@@ -29,5 +29,30 @@ module.exports = (app) => {
       res.status(204).send();
     };
   
-    return { getAll, getById, create, update, remove };
+    const createComGastos = async (req, res) => {
+      try {
+        const gasto = await app.services.gastos.saveRandom();
+    
+        const total = gasto.agua + gasto.luz + gasto.gas + gasto.outros;
+    
+        const novaFatura = {
+          id_residente: req.body.id_residente,
+          id_gastos: gasto.id,
+          total,
+          data_emissao: req.body.data_emissao,
+          data_limite: req.body.data_limite,
+          status: req.body.status || "pendente"
+        };
+    
+        const result = await app.services.faturas.save(novaFatura);
+        if (result.error) return res.status(result.status || 400).json(result);
+    
+        res.status(201).json(result[0]);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro interno ao criar fatura com gastos" });
+      }
+    };
+
+    return { getAll, getById, create, update, remove, createComGastos };
   };
