@@ -69,4 +69,21 @@ module.exports = (app) => {
     .get(app.routes.orders.getById)
     .put(app.routes.orders.update)
     .delete(app.routes.orders.remove);
+
+  app.route("/orders/:id/validate").put(app.routes.orders.validate); // Validar uma encomenda
+
+  app.put("/orders/:orderId/notify", async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      console.log("Notifying order:", orderId);
+
+      const updatedOrder = await app.routes.orders.notify(orderId);
+      res.status(200).json(updatedOrder);
+    } catch (err) {
+      console.error("Error notifying order:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  app.route("/orders/:id/deliver").put(app.routes.orders.markAsDelivered); // Marcar como entregue
 };
