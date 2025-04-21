@@ -2,8 +2,8 @@
 
 exports.up = (knex) => {
   return knex.schema.createTable("announcements", (table) => {
-    table.increments("id").primary(); // Alterado para auto-incrementar
-    table.integer("id_administrator").notNullable();
+    table.increments("id").primary();
+    table.integer("admin_id").notNullable();
     table.string("description", 255).notNullable();
     table.string("image", 255);
     table.date("date").notNullable();

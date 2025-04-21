@@ -10,7 +10,7 @@ module.exports = (app) => {
 
   const save = async (announcement) => {
     console.log("A guardar o comunicado:", announcement); // Adicione este log
-    if (!announcement.id_administrator) {
+    if (!announcement.admin_id) {
       return { error: "Utilizador não autorizado.", status: 403 };
     }
     if (!announcement.description) {
