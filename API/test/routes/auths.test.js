@@ -1,28 +1,38 @@
 /* eslint-disable no-undef */
 const request = require("supertest");
+const jwt = require("jwt-simple");
+
 const app = require("../../src/app");
 
 const mail = `auth${Date.now()}@ipca.pt`;
+var admin;
+
+beforeAll(async () => {
+  admin = await app.services.user.save({
+    name: "Jorge Andrade",
+    phone: "912345678",
+    email: `${mail}`,
+    password: "1234",
+  });
+
+  admin = {
+    ...admin,
+    password: "1234",
+    roles: { isAdmin: true, isWorker: false },
+  };
+  admin.token = jwt.encode(admin, process.env.AUTH_SECRET);
+});
 
 test("Test #1 - Get auth token", () => {
-  return app.services.user
-    .save({
-      name: "Teste",
-      email: mail,
-      password: "123456",
-      phone: "912345678",
+  return request(app)
+    .post("/auth/signin")
+    .send({
+      email: admin.email,
+      password: admin.password,
     })
-    .then(() => {
-      return request(app)
-        .post("/auth/signin")
-        .send({
-          email: mail,
-          password: "123456",
-        })
-        .then((res) => {         
-          expect(res.status).toBe(200);
-          expect(res.body).toHaveProperty("token");
-        });
+    .then((res) => {
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("token");
     });
 });
 
@@ -76,4 +86,22 @@ test("Test #4 - Access protected routes", () => {
     .then((res) => {
       expect(res.status).toBe(401);
     });
+});
+
+test("Test #5 - Access role based protected routes with real time revoged role", () => {
+  return request(app)
+    .put("/users/1/roles")
+    .send({
+      isAdmin: true,
+      isWorker: false,
+    })
+    .set("Authorization", `Bearer ${admin.token}`)
+    .then((res) => {
+      expect(res.status).toBe(403);
+      expect(res.body.error).toBe("Action not permitted");
+    });
+});
+
+afterAll(async () => {
+  await app.services.user.remove(admin.id);
 });

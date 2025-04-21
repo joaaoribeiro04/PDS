@@ -35,5 +35,3 @@ module.exports = (app) => {
 
   return { signin };
 };
-
-// #TODO procurar roles do user e adicionar ao payload
