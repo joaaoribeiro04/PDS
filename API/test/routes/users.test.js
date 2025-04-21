@@ -17,10 +17,12 @@ beforeAll(async () => {
     password: "1234",
   });
 
+  const resAdmin = await app.services.user.findOne({ id: 1 });
+
   user = { ...res, roles: { isAdmin: false, isWorker: false } };
   user.token = jwt.encode(user, process.env.AUTH_SECRET);
 
-  admin = { ...res, roles: { isAdmin: true, isWorker: false } };
+  admin = { ...resAdmin, roles: { isAdmin: true, isWorker: false } };
   admin.token = jwt.encode(admin, process.env.AUTH_SECRET);
 });
 

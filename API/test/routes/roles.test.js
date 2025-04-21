@@ -6,17 +6,11 @@ const app = require("../../src/app");
 
 const MAIN_ROUTE = "roles";
 const PREFIX_ROUTE = "/users";
-const mail = `${Date.now()}@ipca.pt`;
 var user;
 var admin;
 
 beforeAll(async () => {
-  const res = await app.services.user.save({
-    name: "Jorge Andrade",
-    phone: "912345678",
-    email: `andre${mail}`,
-    password: "1234",
-  });
+  const res = await app.services.user.findOne({ id: 1 });
 
   user = { ...res, roles: { isAdmin: false, isWorker: false } };
   user.token = jwt.encode(user, process.env.AUTH_SECRET);
@@ -72,8 +66,4 @@ test("Teste #4 - Update role", () => {
       expect(res.body.message).toBe("role updated");
       expect(res.body.data.isAdmin).toBe(true);
     });
-});
-
-afterAll(async () => {
-  await app.services.user.remove(user.id);
 });
