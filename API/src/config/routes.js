@@ -50,14 +50,25 @@ module.exports = (app) => {
 
   app
     .route("/warnings")
+    .all(app.config.passport.authenticate())
     .get(app.routes.warnings.getAll)
-    .post(app.routes.warnings.create);
+    .post(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.warnings.create
+    );
 
   app
     .route("/warnings/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.warnings.getById)
-    .put(app.routes.warnings.update)
-    .delete(app.routes.warnings.remove);
+    .put(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.warnings.update
+    )
+    .delete(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.warnings.remove
+    );
 
   app
     .route("/faturas")
