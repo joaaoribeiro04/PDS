@@ -24,7 +24,7 @@ beforeEach(async () => {
 
   warning = await app.services.warning.save({
     admin_id: 1,
-    resident_id: 3,
+    resident_id: 1,
     description: "Test warning",
     date: dateString,
   });
@@ -56,7 +56,7 @@ test("Test #3 - Insert warning", () => {
     .set("Authorization", `Bearer ${admin.token}`)
     .send({
       admin_id: 1,
-      resident_id: 3,
+      resident_id: 1,
       description: "Test warning",
       date: dateString,
     })

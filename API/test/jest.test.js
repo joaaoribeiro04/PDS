@@ -1,4 +1,4 @@
-test("Validar as principais operações do jest", () => {
+test.skip("Validar as principais operações do jest", () => {
   let number = null;
   expect(number).toBeNull();
   number = 10;

@@ -1,3 +1,4 @@
+test.skip("skipping test", () => {});
 /*
 const request = require("supertest");
 const app = require("../../src/app");

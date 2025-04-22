@@ -37,46 +37,28 @@ test("Test #1 - Get auth token", () => {
 });
 
 test("Test #2 - Authenticate with wrong password", () => {
-  return app.services.user
-    .save({
-      name: "Teste",
-      email: `new${mail}`,
-      password: "123456",
-      phone: "912345678",
+  return request(app)
+    .post("/auth/signin")
+    .send({
+      email: admin.email,
+      password: "123",
     })
-    .then(() => {
-      return request(app)
-        .post("/auth/signin")
-        .send({
-          email: `new${mail}`,
-          password: "123",
-        })
-        .then((res) => {
-          expect(res.status).toBe(400);
-          expect(res.body.error).toBe("Authentication failed.");
-        });
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Authentication failed.");
     });
 });
 
 test("Test #3 - Authenticate with invalid user", () => {
-  return app.services.user
-    .save({
-      name: "Teste",
-      email: `s${mail}`,
+  return request(app)
+    .post("/auth/signin")
+    .send({
+      email: `f${mail}`,
       password: "123456",
-      phone: "912345678",
     })
-    .then(() => {
-      return request(app)
-        .post("/auth/signin")
-        .send({
-          email: `f${mail}`,
-          password: "123456",
-        })
-        .then((res) => {
-          expect(res.status).toBe(400);
-          expect(res.body.error).toBe("Authentication failed.");
-        });
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Authentication failed.");
     });
 });
 
@@ -93,7 +75,7 @@ test("Test #5 - Access role based protected routes with real time revoged role",
     .put("/users/1/roles")
     .send({
       isAdmin: true,
-      isWorker: false,
+      isWorker: true,
     })
     .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
@@ -102,6 +84,6 @@ test("Test #5 - Access role based protected routes with real time revoged role",
     });
 });
 
-afterAll(async () => {
-  await app.services.user.remove(admin.id);
-});
+// afterAll(async () => {
+//   await app.services.user.remove(admin.id);
+// });

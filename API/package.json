@@ -10,7 +10,8 @@
     "start": "node src/server.js",
     "test": "jest",
     "lint": "eslint src/** test/** --fix",
-    "secure-mode": "jest --watch"
+    "secure-mode": "jest --watch",
+    "test:reset": "knex migrate:rollback --all --env test && knex migrate:latest --env test"
   },
   "keywords": [],
   "author": "",

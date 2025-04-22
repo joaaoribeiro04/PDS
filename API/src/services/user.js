@@ -35,7 +35,7 @@ module.exports = (app) => {
       throw new validationError("Phone is a required attribute");
 
     const userDb = await findOne({ email: user.email });
-    if (userDb) throw new validationError("Email is already in use");
+    if (userDb) throw new validationError("Email is already in use");    
 
     try {
       let newUser = { ...user };
@@ -86,6 +86,7 @@ module.exports = (app) => {
     return app.db("users").where({ id }).update(newUser, ["id", "name", "email", "phone"]);
   };
 
+  // #FIXME - There is a problem where it catches an error most of the time (catch route)
   const remove = async (id) => {
     let userDb = await getAll().where({ id });
     if (userDb && userDb.length == 0)

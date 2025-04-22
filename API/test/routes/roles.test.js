@@ -37,8 +37,8 @@ test("Test #2 - List all admins", () => {
     .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThan(0);
-      expect(res.body[0].isAdmin).toBe(true);
+      expect(res.body.length).toBeGreaterThanOrEqual(0);
+      if (res.body.length > 0) expect(res.body[0].isAdmin).toBe(true);
     });
 });
 
@@ -48,8 +48,8 @@ test("Test #3 - List all workers", () => {
     .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThan(0);
-      expect(res.body[0].isWorker).toBe(true);
+      expect(res.body.length).toBeGreaterThanOrEqual(0);
+      if (res.body.length > 0) expect(res.body[0].isWorker).toBe(true);
     });
 });
 

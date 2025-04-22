@@ -36,8 +36,7 @@ module.exports = (app) => {
 
   const remove = async (req, res, next) => {
     try {
-      // eslint-disable-next-line no-unused-vars
-      let result = await app.services.user.remove(req.params.id);
+      await app.services.user.remove(req.params.id);
       res.status(204).send();
     } catch (err) {
       return next(err);
