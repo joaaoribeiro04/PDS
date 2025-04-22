@@ -65,7 +65,7 @@ module.exports = (app) => {
     }
 
     if ((user.name && user.name == "") || user.name == null)
-      throw new validationError("Name is a required attribute");;
+      throw new validationError("Name is a required attribute");
     if ((user.password && user.password == "") || user.password == null)
       throw new validationError("Password is a required attribute");
     if ((user.phone && user.phone == "") || user.phone == null)
@@ -93,7 +93,7 @@ module.exports = (app) => {
 
     try {
       await app.db("roles").where({ user_id: id }).del();
-      return await app.db("users").where({ id }).del();
+      return await app.db("users").where({ id }).del('Warning deleted');
     } catch (err) {
       throw new validationError("Error while removing user", err.message);
     }

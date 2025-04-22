@@ -49,6 +49,17 @@ module.exports = (app) => {
     .delete(app.routes.announcements.remove);
 
   app
+    .route("/warnings")
+    .get(app.routes.warnings.getAll)
+    .post(app.routes.warnings.create);
+
+  app
+    .route("/warnings/:id")
+    .get(app.routes.warnings.getById)
+    .put(app.routes.warnings.update)
+    .delete(app.routes.warnings.remove);
+
+  app
     .route("/faturas")
     .get(app.routes.faturas.getAll)
     .post(app.routes.faturas.create);

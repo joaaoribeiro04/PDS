@@ -19,7 +19,7 @@ beforeAll(async () => {
   admin.token = jwt.encode(admin, process.env.AUTH_SECRET);
 });
 
-test("Teste #1 - List role by user id", () => {
+test("Test #1 - List role by user id", () => {
   return request(app)
     .get(`${PREFIX_ROUTE}/1/${MAIN_ROUTE}`)
     .set("Authorization", `Bearer ${user.token}`)
@@ -31,7 +31,7 @@ test("Teste #1 - List role by user id", () => {
     });
 });
 
-test("Teste #2 - List all admins", () => {
+test("Test #2 - List all admins", () => {
   return request(app)
     .get(`${PREFIX_ROUTE}/${MAIN_ROUTE}/admins`)
     .set("Authorization", `Bearer ${user.token}`)
@@ -42,7 +42,7 @@ test("Teste #2 - List all admins", () => {
     });
 });
 
-test("Teste #3 - List all workers", () => {
+test("Test #3 - List all workers", () => {
   return request(app)
     .get(`${PREFIX_ROUTE}/${MAIN_ROUTE}/workers`)
     .set("Authorization", `Bearer ${user.token}`)
@@ -53,7 +53,7 @@ test("Teste #3 - List all workers", () => {
     });
 });
 
-test("Teste #4 - Update role", () => {
+test("Test #4 - Update role", () => {
   return request(app)
     .put(`${PREFIX_ROUTE}/1/${MAIN_ROUTE}`)
     .send({
