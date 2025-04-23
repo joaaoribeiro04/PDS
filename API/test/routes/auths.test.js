@@ -84,6 +84,6 @@ test("Test #5 - Access role based protected routes with real time revoged role",
     });
 });
 
-// afterAll(async () => {
-//   await app.services.user.remove(admin.id);
-// });
+afterAll(async () => {
+  await app.services.user.remove(admin.id);
+});

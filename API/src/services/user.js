@@ -25,17 +25,14 @@ module.exports = (app) => {
   };
 
   const save = async (user) => {
-    if (!user.name)
-      throw new validationError("Name is a required attribute");
-    if (!user.email)
-      throw new validationError("Email is a required attribute");
+    if (!user.name) throw new validationError("Name is a required attribute");
+    if (!user.email) throw new validationError("Email is a required attribute");
     if (!user.password)
       throw new validationError("Password is a required attribute");
-    if (!user.phone)
-      throw new validationError("Phone is a required attribute");
+    if (!user.phone) throw new validationError("Phone is a required attribute");
 
     const userDb = await findOne({ email: user.email });
-    if (userDb) throw new validationError("Email is already in use");    
+    if (userDb) throw new validationError("Email is already in use");
 
     try {
       let newUser = { ...user };
@@ -82,19 +79,21 @@ module.exports = (app) => {
 
     let newUser = { ...user };
     if (user.password) newUser.password = getPasswordHash(user.password);
-    
-    return app.db("users").where({ id }).update(newUser, ["id", "name", "email", "phone"]);
+
+    return app
+      .db("users")
+      .where({ id })
+      .update(newUser, ["id", "name", "email", "phone"]);
   };
 
   // #FIXME - There is a problem where it catches an error most of the time (catch route)
   const remove = async (id) => {
-    let userDb = await getAll().where({ id });
-    if (userDb && userDb.length == 0)
-      throw new validationError("User not found");
+    const userDb = await getAll().where({ id }).first();
+    if (!userDb) throw new validationError("User not found");
 
     try {
       await app.db("roles").where({ user_id: id }).del();
-      return await app.db("users").where({ id }).del('Warning deleted');
+      return await app.db("users").where({ id }).del();
     } catch (err) {
       throw new validationError("Error while removing user", err.message);
     }

@@ -275,23 +275,21 @@ test("Test #15 - Update user with invalid id", () => {
     });
 });
 
-// test("Test #16 - Delete user with invalid id", () => {
-//   return request(app)
-//     .delete(`${MAIN_ROUTE}/-1`)
-//     .set("Authorization", `Bearer ${user.token}`)
-//     .then((res) => {
-//       expect(res.status).toBe(400);
-//       expect(res.body.error).toBe("User not found");
-//     });
-// });
+test("Test #16 - Delete user with invalid id", () => {
+  return request(app)
+    .delete(`${MAIN_ROUTE}/-1`)
+    .set("Authorization", `Bearer ${user.token}`)
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("User not found");
+    });
+});
 
-// test("Test #17 - Delete user", () => {
-//   return request(app)
-//     .delete(`${MAIN_ROUTE}/${user.id}`)
-//     .set("Authorization", `Bearer ${user.token}`)
-//     .then((res) => {
-//       console.log("here: ", res.body.error);
-
-//       expect(res.status).toBe(204);
-//     });
-// });
+test("Test #17 - Delete user", () => {
+  return request(app)
+    .delete(`${MAIN_ROUTE}/${user.id}`)
+    .set("Authorization", `Bearer ${user.token}`)
+    .then((res) => {
+      expect(res.status).toBe(204);
+    });
+});
