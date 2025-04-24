@@ -35,11 +35,11 @@ test("Test #1 - List all orders", () => {
 
 test("Test #2 - List order by id", () => {
   return request(app)
-    .get(`${MAIN_ROUTE}/1`)
+    .get(`${MAIN_ROUTE}/${order.id}`)
     .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
-      expect(res.body.id).toBe(1);
+      expect(res.body.id).toBe(order.id);
     });
 });
 

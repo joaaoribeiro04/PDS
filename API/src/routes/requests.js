@@ -1,26 +1,36 @@
+/* eslint-disable no-undef */
 module.exports = (app) => {
-    const findAll = (req, res) => {
-        app.db('requests').select()
-        .then((result) => res.status(200).json(result));
-    };
+  const getAll = (req, res, next) => {
+    app.services.request
+      .getAll()
+      .then((result) => res.status(200).json(result))
+      .catch((err) => next(err));
+  };
 
-    const create = async (req, res) => {
-        let result = await app.services.request.save(req.body);
-        if (result.error) return res.status(400).json(result);
-        res.status(201).json(result[0]);
-    };
+  const getById = (req, res, next) => {
+    app.services.request
+      .findOne({ id: req.params.id })
+      .then((result) => res.status(200).json(result))
+      .catch((err) => next(err));
+  };
 
-    const update = async  (req, res) => {
-        let result = await app.services.request.update(req.params.id, req.body);
-        if (result.error) return res.status(400).json(result);
-        res.status(200).json({ data: result[0], message: "request updated" });
-    };
+  const create = async (req, res, next) => {
+    try {
+      let result = await app.services.request.save(req.body);
+      return res.status(201).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  };
 
-    const remove = async (req, res) => {
-        let result = await app.services.request.remove(req.params.id);
-        if (result.error) return res.status(400).json(result);
-        res.status(204).send();
-    };
+  const update = async (req, res, next) => {
+    try {
+      let result = await app.services.request.update(req.params.id, req.body);
+      res.status(200).json({ data: result[0], message: "Request updated" });
+    } catch (err) {
+      return next(err);
+    }
+  };
 
-    return { findAll, create, update, remove};
+  return { getAll, getById, create, update };
 };

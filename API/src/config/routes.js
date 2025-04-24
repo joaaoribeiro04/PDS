@@ -86,6 +86,16 @@ module.exports = (app) => {
     );
 
   app
+    .route("/requests")
+    .get(app.routes.requests.getAll)
+    .post(app.routes.requests.create);
+
+  app
+    .route("/requests/:id")
+    .get(app.routes.requests.getById)
+    .put(app.routes.requests.update);
+
+  app
     .route("/faturas")
     .get(app.routes.faturas.getAll)
     .post(app.routes.faturas.create);
