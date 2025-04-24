@@ -34,6 +34,7 @@ beforeAll(async () => {
 test("Test #1 - List all requests", () => {
   return request(app)
     .get(MAIN_ROUTE)
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.length).toBeGreaterThanOrEqual(0);
@@ -43,6 +44,7 @@ test("Test #1 - List all requests", () => {
 test("Test #2 - List request by id", () => {
   return request(app)
     .get(`${MAIN_ROUTE}/${requests.id}`)
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.id).toBe(requests.id);
@@ -56,6 +58,7 @@ test("Test #3 - Insert request", () => {
       user_id: 1,
       description: "Test request",
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("PENDING");
@@ -70,6 +73,7 @@ test("Test #4 - Insert report request", () => {
       description: "Test report request",
       is_report: true,
     })
+    .set("Authorization", `Bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("PENDING");
@@ -84,6 +88,7 @@ test("Test #5 - Update request", () => {
       response: "Test response",
       accepted: true,
     })
+    .set("Authorization", `Bearer ${admin.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.message).toBe("Request updated");
@@ -92,15 +97,16 @@ test("Test #5 - Update request", () => {
 });
 
 test("Test #6 - Update report request", () => {
-    return request(app)
-      .put(`${MAIN_ROUTE}/${report.id}`)
-      .send({
-        admin_id: 1,
-        response: "Test response",
-      })
-      .then((res) => {
-        expect(res.status).toBe(200);
-        expect(res.body.message).toBe("Request updated");
-        expect(res.body.data.status).toBe("CLOSED");	
-      });
-  });
+  return request(app)
+    .put(`${MAIN_ROUTE}/${report.id}`)
+    .send({
+      admin_id: 1,
+      response: "Test response",
+    })
+    .set("Authorization", `Bearer ${admin.token}`)
+    .then((res) => {
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Request updated");
+      expect(res.body.data.status).toBe("CLOSED");
+    });
+});

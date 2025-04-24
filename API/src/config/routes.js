@@ -87,13 +87,18 @@ module.exports = (app) => {
 
   app
     .route("/requests")
+    .all(app.config.passport.authenticate())
     .get(app.routes.requests.getAll)
     .post(app.routes.requests.create);
 
   app
     .route("/requests/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.requests.getById)
-    .put(app.routes.requests.update);
+    .put(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.requests.update
+    );
 
   app
     .route("/faturas")
