@@ -72,14 +72,19 @@ module.exports = (app) => {
 
   app
     .route("/orders")
+    .all(app.config.passport.authenticate())
     .get(app.routes.orders.getAll)
     .post(app.routes.orders.create);
 
   app
     .route("/orders/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.orders.getById)
-    .put(app.routes.orders.update);
-    
+    .put(
+      app.config.authorization.authorize("isWorker"),
+      app.routes.orders.update
+    );
+
   app
     .route("/faturas")
     .get(app.routes.faturas.getAll)
