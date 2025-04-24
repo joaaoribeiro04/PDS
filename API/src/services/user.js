@@ -86,7 +86,6 @@ module.exports = (app) => {
       .update(newUser, ["id", "name", "email", "phone"]);
   };
 
-  // #FIXME - There is a problem where it catches an error most of the time (catch route)
   const remove = async (id) => {
     const userDb = await getAll().where({ id }).first();
     if (!userDb) throw new validationError("User not found");

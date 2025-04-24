@@ -71,6 +71,16 @@ module.exports = (app) => {
     );
 
   app
+    .route("/orders")
+    .get(app.routes.orders.getAll)
+    .post(app.routes.orders.create);
+
+  app
+    .route("/orders/:id")
+    .get(app.routes.orders.getById)
+    .put(app.routes.orders.update);
+    
+  app
     .route("/faturas")
     .get(app.routes.faturas.getAll)
     .post(app.routes.faturas.create);
@@ -81,31 +91,20 @@ module.exports = (app) => {
     .put(app.routes.faturas.update)
     .delete(app.routes.faturas.remove);
 
-  app
-    .route("/orders")
-    .get(app.routes.orders.getAll)
-    .post(app.routes.orders.create);
+  // app.route("/orders/:id/validate").put(app.routes.orders.validate); // Validar uma encomenda
 
-  app
-    .route("/orders/:id")
-    .get(app.routes.orders.getById)
-    .put(app.routes.orders.update)
-    .delete(app.routes.orders.remove);
+  // app.put("/orders/:orderId/notify", async (req, res) => {
+  //   try {
+  //     const { orderId } = req.params;
+  //     console.log("Notifying order:", orderId);
 
-  app.route("/orders/:id/validate").put(app.routes.orders.validate); // Validar uma encomenda
+  //     const updatedOrder = await app.routes.orders.notify(orderId);
+  //     res.status(200).json(updatedOrder);
+  //   } catch (err) {
+  //     console.error("Error notifying order:", err);
+  //     res.status(500).json({ error: "Internal Server Error" });
+  //   }
+  // });
 
-  app.put("/orders/:orderId/notify", async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      console.log("Notifying order:", orderId);
-
-      const updatedOrder = await app.routes.orders.notify(orderId);
-      res.status(200).json(updatedOrder);
-    } catch (err) {
-      console.error("Error notifying order:", err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  app.route("/orders/:id/deliver").put(app.routes.orders.markAsDelivered); // Marcar como entregue
+  // app.route("/orders/:id/deliver").put(app.routes.orders.markAsDelivered); // Marcar como entregue
 };
