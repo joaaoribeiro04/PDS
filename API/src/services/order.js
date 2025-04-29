@@ -70,85 +70,10 @@ module.exports = (app) => {
       .update(order, ["worker_id", "date", "status"]);
   };
 
-  // const remove = async (id) => {
-  //   const result = await db("orders").where({ id }).del();
-  //   return result > 0 ? { success: true } : null;
-  // };
-
-  // const validate = async (id) => {
-  //   const order = await getById({ id });
-  //   if (!order) return { error: "Order not found", status: 404 };
-  //   if (order.status !== "pending") {
-  //     return { error: "Order has already been processed", status: 400 };
-  //   }
-
-  //   const [updatedOrder] = await db("orders")
-  //     .where({ id })
-  //     .update({ status: "validated" })
-  //     .returning("*");
-
-  //   await db("order_history").insert({
-  //     order_id: id,
-  //     status: "validated",
-  //   });
-
-  //   return updatedOrder;
-  // };
-
-  // const notify = async (id) => {
-  //   const order = await getById({ id });
-  //   if (!order) return { error: "Order not found", status: 404 };
-  //   if (order.status !== "validated") {
-  //     return {
-  //       error: "Order needs to be validated first",
-  //       status: 400,
-  //     };
-  //   }
-
-  //   console.log(`Notifying resident: ${order.client_name}`);
-  //   const [updatedOrder] = await db("orders")
-  //     .where({ id })
-  //     .update({ status: "notified" })
-  //     .returning("*");
-
-  //   await db("order_history").insert({
-  //     order_id: id,
-  //     status: "notified",
-  //   });
-
-  //   return updatedOrder;
-  // };
-
-  // const markAsDelivered = async (id) => {
-  //   const order = await getById({ id });
-  //   if (!order) return { error: "Order not found", status: 404 };
-  //   if (order.status !== "notified") {
-  //     return {
-  //       error: "Order needs to be notified first",
-  //       status: 400,
-  //     };
-  //   }
-
-  //   const [updatedOrder] = await db("orders")
-  //     .where({ id })
-  //     .update({ status: "delivered" })
-  //     .returning("*");
-
-  //   await db("order_history").insert({
-  //     order_id: id,
-  //     status: "delivered",
-  //   });
-
-  //   return updatedOrder;
-  // };
-
   return {
     findOne,
     getAll,
     save,
     update,
-    // validate,
-    // notify,
-    // markAsDelivered,
   };
 };

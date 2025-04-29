@@ -101,30 +101,16 @@ module.exports = (app) => {
     );
 
   app
-    .route("/faturas")
-    .get(app.routes.faturas.getAll)
-    .post(app.routes.faturas.create);
+    .route("/invoices")
+    .get(app.routes.invoices.getAll)
+    .post(app.routes.invoices.create);
 
   app
-    .route("/faturas/:id")
-    .get(app.routes.faturas.getById)
-    .put(app.routes.faturas.update)
-    .delete(app.routes.faturas.remove);
+    .route("/invoices/:id")
+    .get(app.routes.invoices.getById)
+    .put(app.routes.invoices.update);
 
-  // app.route("/orders/:id/validate").put(app.routes.orders.validate); // Validar uma encomenda
+  app.route("/expenses").get(app.routes.expenses.getAll);
 
-  // app.put("/orders/:orderId/notify", async (req, res) => {
-  //   try {
-  //     const { orderId } = req.params;
-  //     console.log("Notifying order:", orderId);
-
-  //     const updatedOrder = await app.routes.orders.notify(orderId);
-  //     res.status(200).json(updatedOrder);
-  //   } catch (err) {
-  //     console.error("Error notifying order:", err);
-  //     res.status(500).json({ error: "Internal Server Error" });
-  //   }
-  // });
-
-  // app.route("/orders/:id/deliver").put(app.routes.orders.markAsDelivered); // Marcar como entregue
+  app.route("/expenses/:id").get(app.routes.expenses.getById);
 };

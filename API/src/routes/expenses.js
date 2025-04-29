@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
 module.exports = (app) => {
   const getAll = (req, res, next) => {
-    app.services.order
+    app.services.expense
       .getAll()
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err));
   };
 
   const getById = (req, res, next) => {
-    app.services.order
+    app.services.expense
       .findOne({ id: req.params.id })
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err));
@@ -16,17 +16,8 @@ module.exports = (app) => {
 
   const create = async (req, res, next) => {
     try {
-      let result = await app.services.order.save(req.body);
+      let result = await app.services.expense.save(req.body);
       return res.status(201).json(result);
-    } catch (err) {
-      return next(err);
-    }
-  };
-
-  const update = async (req, res, next) => {
-    try {
-      let result = await app.services.order.update(req.params.id, req.body);
-      res.status(200).json({ data: result[0], message: "Order updated" });
     } catch (err) {
       return next(err);
     }
@@ -36,6 +27,5 @@ module.exports = (app) => {
     getAll,
     getById,
     create,
-    update,
   };
 };
