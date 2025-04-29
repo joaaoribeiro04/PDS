@@ -23,108 +23,149 @@ beforeAll(async () => {
   });
 });
 
-test("Test #1 - List all orders", () => {
-  return request(app)
-    .get(MAIN_ROUTE)
-    .set("Authorization", `Bearer ${user.token}`)
-    .then((res) => {
-      expect(res.status).toBe(200);
-      expect(res.body.length).toBeGreaterThanOrEqual(0);
-    });
+describe("Basic Order Operations", () => {
+  test("Test #1 - List all orders", () => {
+    return request(app)
+      .get(MAIN_ROUTE)
+      .set("Authorization", `Bearer ${user.token}`)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        expect(res.body.length).toBeGreaterThanOrEqual(0);
+      });
+  });
+
+  test("Test #2 - List order by id", () => {
+    return request(app)
+      .get(`${MAIN_ROUTE}/${order.id}`)
+      .set("Authorization", `Bearer ${user.token}`)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe(order.id);
+      });
+  });
+
+  test("Test #3 - Insert order", () => {
+    return request(app)
+      .post(MAIN_ROUTE)
+      .send({
+        user_id: 1,
+      })
+      .set("Authorization", `Bearer ${user.token}`)
+      .then((res) => {
+        expect(res.status).toBe(201);
+        expect(res.body.status).toBe("PENDING");
+      });
+  });
+
+  test("Test #4 - Update order", () => {
+    return request(app)
+      .put(`${MAIN_ROUTE}/${order.id}`)
+      .send({
+        worker_id: 2,
+      })
+      .set("Authorization", `Bearer ${worker.token}`)
+      .then((res) => {
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe("Order updated");
+        expect(res.body.data.worker_id).toBe(2);
+      });
+  });
 });
 
-test("Test #2 - List order by id", () => {
-  return request(app)
-    .get(`${MAIN_ROUTE}/${order.id}`)
-    .set("Authorization", `Bearer ${user.token}`)
-    .then((res) => {
-      expect(res.status).toBe(200);
-      expect(res.body.id).toBe(order.id);
-    });
+// Business process tests - Original Workflow
+describe("Order Workflow Simulation - Original", () => {
+  let newOrder;
+
+  test("Step #1 - Resident registers an order", async () => {
+    const res = await request(app)
+      .post(MAIN_ROUTE)
+      .send({ user_id: user.id })
+      .set("Authorization", `Bearer ${user.token}`);
+
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe("PENDING");
+    newOrder = res.body;
+  });
+
+  test("Step #2 - Worker registers the arrival of the order and notifies the resident", async () => {
+    const res = await request(app)
+      .put(`${MAIN_ROUTE}/${newOrder.id}`)
+      .send({ worker_id: worker.id, status: "DELIVERED" })
+      .set("Authorization", `Bearer ${worker.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Order updated");
+    expect(res.body.data.status).toBe("DELIVERED");
+    expect(res.body.data.worker_id).toBe(worker.id);
+  });
+
+  test("Step #3 - Worker updates the system after the resident picks up the order", async () => {
+    const res = await request(app)
+      .put(`${MAIN_ROUTE}/${newOrder.id}`)
+      .send({ worker_id: worker.id, status: "COMPLETED" })
+      .set("Authorization", `Bearer ${worker.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Order updated");
+    expect(res.body.data.status).toBe("COMPLETED");
+  });
 });
 
-test("Test #3 - Insert order", () => {
-  return request(app)
-    .post(MAIN_ROUTE)
-    .send({
-      user_id: 1,
-    })
-    .set("Authorization", `Bearer ${user.token}`)
-    .then((res) => {
-      expect(res.status).toBe(201);
-      expect(res.body.status).toBe("PENDING");
-    });
-});
+// Business process tests - Extended Workflow
+// This workflow includes a quality check step before the order is delivered to the resident.
+describe("Order Workflow Simulation - Extended", () => {
+  let newOrder;
 
-test("Test #4 - Update order", () => {
-  return request(app)
-    .put(`${MAIN_ROUTE}/${order.id}`)
-    .send({
-      worker_id: 2,
-    })
-    .set("Authorization", `Bearer ${worker.token}`)
-    .then((res) => {
+  test("Step #1 - Resident registers an order", async () => {
+    const res = await request(app)
+      .post(MAIN_ROUTE)
+      .send({ user_id: user.id })
+      .set("Authorization", `Bearer ${user.token}`);
+
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe("PENDING");
+    newOrder = res.body;
+  });
+
+  test("Step #2 - System validates the order", async () => {
+    expect(newOrder).toHaveProperty("user_id");
+    expect(newOrder).toHaveProperty("status");
+    expect(newOrder.status).toBe("PENDING");
+  });
+
+  test("Step #3 - Worker verifies quality and updates order status", async () => {
+    const isDamaged = false;
+
+    if (isDamaged) {
+      const res = await request(app)
+        .put(`${MAIN_ROUTE}/${newOrder.id}`)
+        .send({ worker_id: worker.id, status: "REJECTED" })
+        .set("Authorization", `Bearer ${worker.token}`);
+
       expect(res.status).toBe(200);
       expect(res.body.message).toBe("Order updated");
-      expect(res.body.data.worker_id).toBe(2);
-    });
-});
+      expect(res.body.data.status).toBe("REJECTED");
+    } else {
+      const res = await request(app)
+        .put(`${MAIN_ROUTE}/${newOrder.id}`)
+        .send({ worker_id: worker.id, status: "DELIVERED" })
+        .set("Authorization", `Bearer ${worker.token}`);
 
-describe("Order History Tracking", () => {
-  // let orderId;
-  // test("Test #7 (History) - Create order and verify history", async () => {
-  //   const res = await request(app).post("/orders").send({
-  //     product: "Laptop",
-  //     quantity: 1,
-  //     client_name: "John Doe",
-  //   });
-  //   expect(res.status).toBe(201);
-  //   orderId = res.body.id;
-  //   const history = await app.db("order_history").where({ order_id: orderId });
-  //   expect(history.length).toBe(1);
-  //   expect(history[0].status).toBe("pending");
-  // });
-  // test("Test #8 (History) - Validate order and verify history", async () => {
-  //   const res = await request(app).put(`/orders/${orderId}/validate`);
-  //   expect(res.status).toBe(200);
-  //   const history = await app.db("order_history").where({ order_id: orderId });
-  //   expect(history.length).toBe(2);
-  //   expect(history[1].status).toBe("validated");
-  // });
-  // test("Test #9 (History) - Notify order and verify history", async () => {
-  //   const res = await request(app).put(`/orders/${orderId}/notify`);
-  //   expect(res.status).toBe(200);
-  //   const history = await app.db("order_history").where({ order_id: orderId });
-  //   expect(history.length).toBe(3);
-  //   expect(history[2].status).toBe("notified");
-  // });
-  // test("Test #10 (History) - Deliver order and verify history", async () => {
-  //   const res = await request(app).put(`/orders/${orderId}/deliver`);
-  //   expect(res.status).toBe(200);
-  //   const history = await app.db("order_history").where({ order_id: orderId });
-  //   expect(history.length).toBe(4);
-  //   expect(history[3].status).toBe("delivered");
-  // });
-  // test("Test #11 (History) - Error with invalid quantity", async () => {
-  //   const res = await request(app).post("/orders").send({
-  //     product: 'Monitor 24"',
-  //     client_name: "Ana Martins",
-  //     quantity: 0, // Invalid quantity
-  //   });
-  //   expect(res.status).toBe(400);
-  //   expect(res.body.error).toBe("Quantity must be greater than zero");
-  // });
-  // test("Test #12 (History) - Error when notifying non-validated order", async () => {
-  //   // Create a new order
-  //   const resCreate = await request(app).post("/orders").send({
-  //     product: "Test Product",
-  //     quantity: 1,
-  //     client_name: "Test Client",
-  //   });
-  //   const newOrderId = resCreate.body.id;
-  //   // Try to notify without validating
-  //   const res = await request(app).put(`/orders/${newOrderId}/notify`);
-  //   expect(res.status).toBe(400);
-  //   expect(res.body.error).toBe("Order needs to be validated first");
-  // });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("Order updated");
+      expect(res.body.data.status).toBe("DELIVERED");
+      expect(res.body.data.worker_id).toBe(worker.id);
+    }
+  });
+
+  test("Step #4 - Resident picks up the order", async () => {
+    const res = await request(app)
+      .put(`${MAIN_ROUTE}/${newOrder.id}`)
+      .send({ worker_id: worker.id, status: "COMPLETED" })
+      .set("Authorization", `Bearer ${worker.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Order updated");
+    expect(res.body.data.status).toBe("COMPLETED");
+  });
 });
