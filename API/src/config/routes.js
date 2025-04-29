@@ -102,15 +102,29 @@ module.exports = (app) => {
 
   app
     .route("/invoices")
+    .all(app.config.passport.authenticate())
     .get(app.routes.invoices.getAll)
-    .post(app.routes.invoices.create);
+    .post(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.invoices.create
+    );
 
   app
     .route("/invoices/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.invoices.getById)
-    .put(app.routes.invoices.update);
+    .put(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.invoices.update
+    );
 
-  app.route("/expenses").get(app.routes.expenses.getAll);
+  app
+    .route("/expenses")
+    .all(app.config.passport.authenticate())
+    .get(app.routes.expenses.getAll);
 
-  app.route("/expenses/:id").get(app.routes.expenses.getById);
+  app
+    .route("/expenses/:id")
+    .all(app.config.passport.authenticate())
+    .get(app.routes.expenses.getById);
 };
