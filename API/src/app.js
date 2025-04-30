@@ -29,5 +29,4 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
-require("./cron/monthlyProcessor.js")(app);
 require('dotenv').config();
