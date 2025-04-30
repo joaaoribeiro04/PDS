@@ -65,13 +65,14 @@ module.exports = (app) => {
         newRequest.date = dateString;
         break;
       case false:
-        if (!request.accepted)
+        if (request.accepted !== true && request.accepted !== false)
           throw new validationError(
             "Request cannot be updated without status change"
           );
 
         newRequest.date = dateString;
-        request.accepted === true
+        
+        request.accepted == true
           ? (newRequest.status = "APPROVED")
           : (newRequest.status = "DENIED");
 

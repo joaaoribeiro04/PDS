@@ -39,14 +39,25 @@ module.exports = (app) => {
 
   app
     .route("/announcements")
+    .all(app.config.passport.authenticate())
     .get(app.routes.announcements.getAll)
-    .post(app.routes.announcements.create);
+    .post(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.announcements.create
+    );
 
   app
     .route("/announcements/:id")
+    .all(app.config.passport.authenticate())
     .get(app.routes.announcements.getById)
-    .put(app.routes.announcements.update)
-    .delete(app.routes.announcements.remove);
+    .put(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.announcements.update
+    )
+    .delete(
+      app.config.authorization.authorize("isAdmin"),
+      app.routes.announcements.remove
+    );
 
   app
     .route("/warnings")
