@@ -29,9 +29,12 @@ lerna-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+knexfile.js
 
 # Caches e arquivos temporários
 .tmp/
 .DS_Store
 Thumbs.db
 *.swp
+
+/src/SQL
