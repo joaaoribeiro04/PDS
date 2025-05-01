@@ -4,6 +4,14 @@ const app = require("express")();
 const consign = require("consign");
 const knex = require("knex");
 const knexfile = require("../knexfile");
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
 
 app.db = knex(knexfile.test);
 
@@ -29,4 +37,4 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
-require('dotenv').config();
+require("dotenv").config();

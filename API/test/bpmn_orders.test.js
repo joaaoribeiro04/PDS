@@ -5,7 +5,6 @@ const jwt = require("jwt-simple");
 const app = require("../src/app");
 
 const MAIN_ROUTE = "/orders";
-var order;
 var user;
 var worker;
 var admin;
