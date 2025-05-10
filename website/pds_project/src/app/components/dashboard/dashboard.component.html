@@ -1,0 +1,23 @@
+<div class="dashboard-container">
+  <h2 class="welcome">Welcome, {{ userName }}!</h2>
+
+  <div class="tabs">
+    <button *ngFor="let tab of tabs" [class.active]="activeTab === tab" (click)="setTab(tab)">
+      {{tab}}
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <app-announcements *ngIf="activeTab === 'announcements'"></app-announcements>
+
+    <app-requests *ngIf="activeTab === 'requests'"></app-requests>
+
+    <app-reports *ngIf="activeTab === 'reports'"></app-reports>
+
+    <app-invoices *ngIf="activeTab === 'invoices'"></app-invoices>
+
+    <app-orders *ngIf="activeTab === 'orders'"></app-orders>
+
+    <app-warnings *ngIf="activeTab === 'warnings'"></app-warnings>
+  </div>
+</div>

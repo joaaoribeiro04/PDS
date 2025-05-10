@@ -1,0 +1,56 @@
+<!-- Non-worker interface -->
+<div *ngIf="!isWorker">
+  <button (click)="openModal()">Insert New Order</button>
+
+  <div *ngIf="showModal" class="modal">
+    <p>Confirm you want to insert a new order?</p>
+    <button (click)="confirmAction()">Confirm</button>
+    <button (click)="cancelAction()">Cancel</button>
+  </div>
+
+  <p *ngIf="orderStatus" class="success-msg" [ngClass]="'show'">{{ orderStatus }}</p>
+  <p *ngIf="errorMessage" class="error-msg" [ngClass]="'show'">{{ errorMessage }}</p>
+</div>
+
+<div *ngIf="isWorker">
+  <input [(ngModel)]="searchId" type="text" placeholder="Search Order ID" />
+  <button (click)="filterStatus = 'PENDING'">Pending</button>
+  <button (click)="filterStatus = 'DELIVERED'">Delivered</button>
+  <button (click)="filterStatus = ''">Clear Filter</button>
+</div>
+
+<div class="orders-list" *ngIf="filteredOrders.length > 0">
+  <div class="order-card" *ngFor="let order of filteredOrders">
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+    <p><strong>User ID:</strong> {{ order.user_id }}</p>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Date:</strong> {{ order.date | date:'dd/MM/yyyy' }}</p>
+
+
+    <div *ngIf="isWorker">
+      <button *ngIf="order.status === 'PENDING'" (click)="openStatusModal(order.id, 'DELIVERED')">
+        Mark as Delivered
+      </button>
+      <button *ngIf="order.status === 'DELIVERED'" (click)="openStatusModal(order.id, 'COMPLETED')">
+        Mark as Completed
+      </button>
+
+      <div class="modal-backdrop" *ngIf="showStatusModal">
+        <div class="modal">
+          <h2>Confirmar Atualização</h2>
+          <p>
+            Deseja realmente alterar o estado da encomenda
+            <strong>#{{ selectedOrderId }}</strong>
+            para <strong>{{ selectedStatus }}</strong>?
+          </p>
+          <div class="modal-buttons">
+            <button class="confirm" (click)="confirmStatusUpdate()">Sim</button>
+            <button class="cancel" (click)="closeStatusModal()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p *ngIf="filteredOrders.length === 0">No orders found.</p>

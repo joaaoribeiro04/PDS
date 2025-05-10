@@ -1,0 +1,57 @@
+<div *ngIf="!isAdmin">
+  <h2>Your Invoices</h2>
+
+  <div class="filter-buttons">
+    <button (click)="filterStatus = 'ALL'">All</button>
+    <button (click)="filterStatus = 'UNPAID'">Unpaid</button>
+    <button (click)="filterStatus = 'PAID'">Paid</button>
+  </div>
+
+  <div class="invoice-card" *ngFor="let invoice of filteredUserInvoices">
+    <p><strong>Invoice ID:</strong> {{ invoice.id }}</p>
+    <p><strong>Status:</strong> {{ invoice.isPaid ? 'PAID' : 'UNPAID' }}</p>
+    <p><strong>Issue date:</strong> {{ invoice.issue_date | date: 'dd/MM/yyyy' }} <strong>Due date:</strong> {{
+      invoice.due_date | date: 'dd/MM/yyyy' }}</p>
+    <p><strong>Total:</strong> {{ invoice.total }}</p>
+  </div>
+</div>
+
+<div *ngIf="isAdmin">
+  <button class="create-invoice-btn" (click)="openInvoiceModal()">Create Invoice</button>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>Select User to Create Invoice</h3>
+      <button class="close-btn" (click)="showModal = false">✖</button>
+      <div *ngIf="usersWithoutInvoice.length === 0">
+        <p>All users already have invoices this month.</p>
+      </div>
+      <div *ngFor="let user of usersWithoutInvoice" class="user-entry">
+        <span>{{ user.name }} (ID: {{ user.id }})</span>
+        <button (click)="createInvoiceForUser(user.id)">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <h2>All Invoices</h2>
+  <div class="filter-buttons">
+    <button (click)="filterStatus = 'ALL'">All</button>
+    <button (click)="filterStatus = 'UNPAID'">Unpaid</button>
+    <button (click)="filterStatus = 'PAID'">Paid</button>
+  </div>
+
+  <div class="invoice-card" *ngFor="let invoice of filteredAllInvoices">
+    <p><strong>Invoice ID:</strong> {{ invoice.id }}</p>
+    <p><strong>Expense ID:</strong> {{ invoice.expense_id }}</p>
+    <p><strong>User ID:</strong> {{ invoice.user_id }}</p>
+    <p><strong>Status:</strong> {{ invoice.isPaid ? 'PAID' : 'UNPAID' }}</p>
+    <p><strong>Issue date:</strong> {{ invoice.issue_date | date: 'dd/MM/yyyy' }} <strong>Due date:</strong> {{
+      invoice.due_date | date: 'dd/MM/yyyy' }}</p>
+    <p><strong>Total:</strong> {{ invoice.total }}</p>
+    <button *ngIf="!invoice.isPaid" (click)="markAsPaid(invoice.id)">Mark as Paid</button>
+    <button *ngIf="!invoice.isPaid && isPastDue(invoice.due_date)" class="warn-btn" (click)="emitWarning(invoice)">
+      Send Warning
+    </button>
+  </div>
+</div>

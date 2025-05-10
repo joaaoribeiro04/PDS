@@ -1,0 +1,54 @@
+<div *ngIf="!isAdmin">
+  <h2>Submit a Report</h2>
+  <textarea [(ngModel)]="newReportDesc" placeholder="Enter your report..."></textarea>
+  <button (click)="submitReport()">Submit</button>
+
+  <h3>Your Reports</h3>
+  <div class="filter-buttons">
+    <button (click)="filterStatus = 'ALL'">All</button>
+    <button (click)="filterStatus = 'PENDING'">Pending</button>
+    <button (click)="filterStatus = 'CLOSED'">Closed</button>
+  </div>
+
+  <div class="request-card" *ngFor="let report of filteredUserReports">
+    <p><strong>Description:</strong> {{ report.description }}</p>
+    <p><strong>Status:</strong> {{ report.status }}</p>
+    <p><strong>Date:</strong> {{ report.date | date: 'dd/MM/yyyy' }}</p>
+    <p *ngIf="report.response"><strong>Response:</strong> {{ report.response }}</p>
+  </div>
+</div>
+
+<div *ngIf="isAdmin">
+  <h2>User Reports</h2>
+  <div class="filter-buttons">
+    <button (click)="filterStatus = 'ALL'">All</button>
+    <button (click)="filterStatus = 'PENDING'">Pending</button>
+    <button (click)="filterStatus = 'CLOSED'">Closed</button>
+  </div>
+
+  <div class="request-card" *ngFor="let report of filteredAllReports">
+    <p><strong>User ID:</strong> {{ report.user_id }}</p>
+    <p><strong>Description:</strong> {{ report.description }}</p>
+    <p><strong>Status:</strong> {{ report.status }}</p>
+    <p *ngIf="report.response"><strong>Response:</strong> {{ report.response }}</p>
+
+    <div *ngIf="report.status === 'PENDING'">
+      <button (click)="approveReport(report)">Approve</button>
+      <button (click)="rejectReport(report)">Reject</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showWarningModal">
+  <div class="modal">
+    <h3>Issue Warning</h3>
+    <p>Select a user to warn for this report:</p>
+    <select [(ngModel)]="selectedReport.selectedUserId">
+      <option *ngFor="let user of allUsers" [value]="user.id">{{ user.name }} - {{user.id}}</option>
+    </select>
+    <div class="modal-buttons">
+      <button (click)="issueWarning()">Confirm</button>
+      <button class="cancel" (click)="cancelWarning()">Cancel</button>
+    </div>
+  </div>
+</div>

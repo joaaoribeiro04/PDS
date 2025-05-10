@@ -1,0 +1,32 @@
+<!-- Admin interface -->
+<div *ngIf="isAdmin" class="admin-form">
+  <h2>Create Announcement</h2>
+  <form (ngSubmit)="createAnnouncement()">
+    <input type="text" [(ngModel)]="newAnnouncement.description" name="description" placeholder="Description"
+      required />
+    <input type="text" [(ngModel)]="newAnnouncement.image" name="image" placeholder="Image URL" />
+    <input type="date" [(ngModel)]="newAnnouncement.date" name="date" required />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<!-- Feedback messages -->
+<p *ngIf="successMessage" class="success-msg show">{{ successMessage }}</p>
+<p *ngIf="errorMessage" class="error-msg show">{{ errorMessage }}</p>
+
+<div *ngIf="mostRecent" class="highlight-announcement">
+  <h3>Latest Announcement</h3>
+  <p><strong>{{ mostRecent.description }}</strong></p>
+  <p><em>{{ mostRecent.date | date: 'dd/MM/yyyy' }}</em></p>
+  <img *ngIf="mostRecent.image" [src]="mostRecent.image" alt="Latest announcement" />
+</div>
+
+<div class="announcements-list" *ngIf="announcements.length > 0">
+  <div class="announcement-card" *ngFor="let a of announcements">
+    <p><strong>Description:</strong> {{ a.description }}</p>
+    <p><strong>Date:</strong> {{ a.date | date:'dd/MM/yyyy' }}</p>
+    <img *ngIf="a.image" [src]="a.image" alt="Announcement image" />
+  </div>
+</div>
+
+<p *ngIf="!mostRecent && announcements.length === 0">No announcements found.</p>

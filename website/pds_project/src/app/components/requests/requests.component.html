@@ -1,0 +1,48 @@
+<!-- Regular user interface -->
+<div *ngIf="!isAdmin">
+  <h2>Submit a New Request</h2>
+  <textarea [(ngModel)]="newRequestDesc" placeholder="Enter your request..."></textarea>
+  <button (click)="submitRequest()">Submit</button>
+
+  <h3>Your Requests</h3>
+
+  <div class="filter-buttons">
+    <button (click)="userFilter = 'ALL'">All</button>
+    <button (click)="userFilter = 'PENDING'">Pending</button>
+    <button (click)="userFilter = 'APPROVED'">Approved</button>
+    <button (click)="userFilter = 'DENIED'">Rejected</button>
+  </div>
+
+  <div class="request-card" *ngFor="let req of filteredUserRequests()">
+    <p><strong>Description:</strong> {{ req.description }}</p>
+    <p><strong>Status:</strong> {{ req.status }}</p>
+    <p><strong>Date:</strong> {{ req.date | date: 'dd/MM/yyyy' }}</p>
+    <p *ngIf="req.response"><strong>Response:</strong> {{ req.response }}</p>
+  </div>
+</div>
+
+<!-- Admin interface -->
+<div *ngIf="isAdmin">
+  <h2>Manage Requests</h2>
+
+  <div class="filters">
+    <button (click)="filterStatus = ''">All</button>
+    <button (click)="filterStatus = 'PENDING'">Pending</button>
+    <button (click)="filterStatus = 'APPROVED'">Approved</button>
+    <button (click)="filterStatus = 'DENIED'">Rejected</button>
+  </div>
+
+  <div class="request-card" *ngFor="let req of filteredRequests">
+    <p><strong>User ID:</strong> {{ req.user_id }}</p>
+    <p><strong>Description:</strong> {{ req.description }}</p>
+    <p><strong>Status:</strong> {{ req.status }}</p>
+    <p><strong>Date:</strong> {{ req.date | date: 'dd/MM/yyyy' }}</p>
+    <p *ngIf="req.response"><strong>Response:</strong> {{ req.response }}</p>
+
+    <div *ngIf="req.status === 'PENDING'">
+      <textarea [(ngModel)]="req.response" placeholder="Write your response..."></textarea>
+      <button (click)="respondToRequest(req.id, req.response, true)">Approve</button>
+      <button (click)="respondToRequest(req.id, req.response, false)">Reject</button>
+    </div>
+  </div>
+</div>

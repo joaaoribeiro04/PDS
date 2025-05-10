@@ -1,0 +1,127 @@
+.create-invoice-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #1d4ed8;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 400px;
+    position: relative;
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .user-entry {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+
+      button {
+        background-color: green;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+
+        &:hover {
+          background-color: darkgreen;
+        }
+      }
+    }
+  }
+}
+
+
+h2 {
+  margin-bottom: 1rem;
+  color: #1e3a8a;
+}
+
+.filter-buttons {
+  margin-bottom: 1rem;
+
+  button {
+    margin-right: 0.5rem;
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #3b82f6;
+    }
+  }
+}
+
+.invoice-card {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  button {
+    margin-top: 0.5rem;
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darkgreen;
+    }
+  }
+
+  .warn-btn {
+    margin-top: 0.5rem;
+    background-color: #f97316; // orange-500
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ea580c; // orange-600
+    }
+  }
+}
