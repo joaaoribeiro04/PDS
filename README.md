@@ -8,13 +8,12 @@ O **PDS – Backend** é uma API desenvolvida para gerir, processar e disponibil
 ---
 
 ## 🛠️ Tecnologias e Ferramentas Utilizadas  
-- **Linguagem & Framework**: Node.js + Express *(ajusta se necessário)*  
-- **Base de Dados**: PostgreSQL *(ou outra)*  
+- **Linguagem & Framework**: Node.js
+- **Base de Dados**: PostgreSQL
 - **ORM/ODM**: Sequelize / TypeORM / Mongoose  
 - **Autenticação & Autorização**: JWT (JSON Web Tokens)  
-- **Testes**: Jest *(ou outra framework)*  
+- **Testes**: Jest 
 - **Controlo de Versão**: Git + GitHub  
-- **Contêineres**: Docker + Docker Compose *(opcional)*  
 
 ---
 
