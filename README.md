@@ -19,7 +19,7 @@ O **PDS – Backend** é uma API desenvolvida para gerir, processar e disponibil
 ---
 
 ## 📁 Estrutura do Projeto  
-
+```bash
 PDS-Backend/
 ├── src/
 │ ├── controllers/ # Endpoints HTTP
@@ -34,7 +34,7 @@ PDS-Backend/
 ├── docker-compose.yml # Orquestração de serviços
 └── README.md # Documentação do projeto
 ---
-
+```
 ## ⚙️ Instalação e Configuração
 
 1. **Clonar o repositório**
